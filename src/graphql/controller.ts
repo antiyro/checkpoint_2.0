@@ -27,7 +27,7 @@ import {
   singleEntityQueryName
 } from '../utils/graphql';
 import { querySingle, queryMulti, ResolverContext } from './resolvers';
-import { toPlural } from '../utils/checkpoint'
+import { toPlural } from '../utils/checkpoint';
 
 /**
  * Type for single and multiple query resolvers
@@ -360,6 +360,8 @@ export class GqlEntityController {
     // check for TEXT scalar type
     if (type instanceof GraphQLScalarType && type.name === 'Text') {
       return 'TEXT';
+    } else if (type instanceof GraphQLScalarType && type.name === 'BigInt') {
+      return 'BIGINT';
     }
 
     // TODO(perfectmak): Add support for List types

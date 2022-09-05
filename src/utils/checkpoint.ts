@@ -8,9 +8,8 @@ export const toPlural = (str: string): string => {
   let plural = '';
 
   if (str[str.length - 1].toLowerCase() === 'y') {
-    str[str.length - 1].replace(/.$/,"i");
-    plural = 'es';
-  } else
-    plural = 's';
-  return(str + plural);
-}
+    plural = 'ies';
+    return str.slice(0, -1) + plural;
+  } else plural = 's';
+  return str + plural;
+};

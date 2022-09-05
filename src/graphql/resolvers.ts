@@ -40,12 +40,6 @@ export async function queryMulti(parent, args, context: ResolverContext, info) {
 export async function querySingle(parent, args, context: ResolverContext, info) {
   const { log, mysql } = context;
 
-  let plural = ''
-  if (info.fieldName[info.fieldName.length - 1].toLowerCase() === 'y') {
-    info.fieldName[info.fieldName.length - 1].replace(/.$/,"i");
-    plural = 'es';
-  } else
-    plural = 's';
   const query = `SELECT * FROM ${toPlural(info.fieldName)} WHERE id = ? LIMIT 1`;
   log.debug({ sql: query, args }, 'executing single query');
 

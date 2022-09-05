@@ -13,9 +13,8 @@ export const singleEntityQueryName = (entity: GraphQLObjectType) => entity.name.
  *
  */
 export const multiEntityQueryName = (entity: GraphQLObjectType) => {
-    
-  return(`${toPlural(entity.name.toLowerCase())}`);
-}
+  return `${toPlural(entity.name.toLowerCase())}`;
+};
 
 /**
  * Generate sample query string based on entity object fields.
