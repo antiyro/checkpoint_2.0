@@ -1,5 +1,6 @@
 import { GraphQLObjectType, isLeafType, isWrappingType } from 'graphql';
 import { jsonToGraphQLQuery } from 'json-to-graphql-query';
+import { toPlural } from './checkpoint';
 
 /**
  * Returns name of query for fetching single entity record
@@ -11,7 +12,10 @@ export const singleEntityQueryName = (entity: GraphQLObjectType) => entity.name.
  * Returns name of query for fetching multiple entity records
  *
  */
-export const multiEntityQueryName = (entity: GraphQLObjectType) => `${entity.name.toLowerCase()}s`;
+export const multiEntityQueryName = (entity: GraphQLObjectType) => {
+    
+  return(`${toPlural(entity.name.toLowerCase())}`);
+}
 
 /**
  * Generate sample query string based on entity object fields.

@@ -27,6 +27,7 @@ import {
   singleEntityQueryName
 } from '../utils/graphql';
 import { querySingle, queryMulti, ResolverContext } from './resolvers';
+import { toPlural } from '../utils/checkpoint'
 
 /**
  * Type for single and multiple query resolvers
@@ -156,8 +157,8 @@ export class GqlEntityController {
 
     let sql = '';
     this.schemaObjects.forEach(type => {
-      sql += `\n\nDROP TABLE IF EXISTS ${type.name.toLowerCase()}s;`;
-      sql += `\nCREATE TABLE ${type.name.toLowerCase()}s (`;
+      sql += `\n\nDROP TABLE IF EXISTS ${toPlural(type.name.toLowerCase())};`;
+      sql += `\nCREATE TABLE ${toPlural(type.name.toLowerCase())} (`;
       let sqlIndexes = ``;
 
       this.getTypeFields(type).forEach(field => {
