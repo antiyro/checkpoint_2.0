@@ -260,8 +260,7 @@ export default class Checkpoint {
 
       if (
         tx.type === 'DEPLOY' &&
-        source.deploy_fn &&
-        contract === validateAndParseAddress(tx.contract_address)
+        source.deploy_fn
       ) {
         foundContractData = true;
         this.log.info(
@@ -273,7 +272,6 @@ export default class Checkpoint {
       }
 
       for (const event of receipt.events) {
-        if (contract === validateAndParseAddress(event.from_address)) {
           for (const sourceEvent of source.events) {
             if (`0x${starknetKeccak(sourceEvent.name).toString('hex')}` === event.keys[0]) {
               foundContractData = true;
@@ -292,7 +290,6 @@ export default class Checkpoint {
               });
             }
           }
-        }
       }
 
       if (foundContractData) {
