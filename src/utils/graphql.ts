@@ -17,7 +17,8 @@ export const singleEntityQueryName = (entity: GraphQLObjectType) => entity.name.
  * Returns name of query for fetching multiple entity records
  *
  */
-export const multiEntityQueryName = (entity: GraphQLObjectType) => `${entity.name.toLowerCase()}s`;
+export const multiEntityQueryName = (entity: GraphQLObjectType) =>
+  `${toPlural(entity.name.toLowerCase())}`;
 
 /**
  * Generate sample query string based on entity object fields.
@@ -55,6 +56,23 @@ export const generateQueryForEntity = (entity: GraphQLObjectType): string => {
     },
     { pretty: true }
   );
+};
+
+export const ReservedWords = ['to', 'from'];
+
+export function isReserved(word: string): boolean {
+  for (let i = 0; i < ReservedWords.length; i++) if (ReservedWords[i] == word) return true;
+  return false;
+}
+
+export const toPlural = (str: string): string => {
+  let plural = '';
+
+  if (str[str.length - 1].toLowerCase() === 'y') {
+    plural = 'ies';
+    return str.slice(0, -1) + plural;
+  } else plural = 's';
+  return str + plural;
 };
 
 export const getNonNullType = (type: GraphQLOutputType): GraphQLOutputType => {

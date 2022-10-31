@@ -1,6 +1,6 @@
 import { GraphQLField, GraphQLList, GraphQLObjectType } from 'graphql';
 import { AsyncMySqlPool } from '../mysql';
-import { getNonNullType } from '../utils/graphql';
+import { getNonNullType, toPlural } from '../utils/graphql';
 import { Logger } from '../utils/logger';
 
 export interface ResolverContext {
@@ -57,7 +57,9 @@ export async function queryMulti(parent, args, context: ResolverContext, info) {
 
   params.push(skip, first);
 
-  const query = `SELECT * FROM ${returnType.name.toLowerCase()}s ${whereSql} ${orderBySql} LIMIT ?, ?`;
+  const query = `SELECT * FROM ${toPlural(
+    returnType.name.toLowerCase()
+  )} ${whereSql} ${orderBySql} LIMIT ?, ?`;
   log.debug({ sql: query, args }, 'executing multi query');
 
   const result = await mysql.queryAsync(query, params);
@@ -70,7 +72,7 @@ export async function querySingle(parent, args, context: ResolverContext, info) 
   const returnType = getNonNullType(info.returnType) as GraphQLObjectType;
   const jsonFields = getJsonFields(returnType);
 
-  const query = `SELECT * FROM ${returnType.name.toLowerCase()}s WHERE id = ? LIMIT 1`;
+  const query = `SELECT * FROM ${toPlural(returnType.name.toLowerCase())} WHERE id = ? LIMIT 1`;
   log.debug({ sql: query, args }, 'executing single query');
 
   const id = parent?.[info.fieldName] || args.id;

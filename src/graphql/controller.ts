@@ -25,7 +25,9 @@ import {
   generateQueryForEntity,
   multiEntityQueryName,
   singleEntityQueryName,
-  getNonNullType
+  isReserved,
+  getNonNullType,
+  toPlural
 } from '../utils/graphql';
 import { querySingle, queryMulti, ResolverContext } from './resolvers';
 
@@ -180,13 +182,13 @@ export class GqlEntityController {
 
     let sql = '';
     this.schemaObjects.forEach(type => {
-      sql += `\n\nDROP TABLE IF EXISTS ${type.name.toLowerCase()}s;`;
-      sql += `\nCREATE TABLE ${type.name.toLowerCase()}s (`;
+      sql += `\n\nDROP TABLE IF EXISTS ${toPlural(type.name.toLowerCase())};`;
+      sql += `\nCREATE TABLE ${toPlural(type.name.toLowerCase())} (`;
       let sqlIndexes = ``;
 
       this.getTypeFields(type).forEach(field => {
         const sqlType = this.getSqlType(field.type);
-
+        if (isReserved(field.name)) field.name = '`' + field.name + '`';
         sql += `\n  ${field.name} ${sqlType}`;
         if (field.type instanceof GraphQLNonNull) {
           sql += ' NOT NULL,';
@@ -412,6 +414,14 @@ export class GqlEntityController {
     // check for TEXT scalar type
     if (type instanceof GraphQLScalarType && type.name === 'Text') {
       return 'TEXT';
+    } else if (type instanceof GraphQLScalarType && type.name === 'BigInt') {
+      return 'BIGINT';
+    } else if (type instanceof GraphQLScalarType && type.name === 'BigDecimal') {
+      return 'DECIMAL(36,18)';
+    } else if (type instanceof GraphQLScalarType && type.name === 'Boolean') {
+      return 'BOOL';
+    } else if (type instanceof GraphQLScalarType && type.name === 'Array') {
+      return 'VARCHAR(512)';
     }
 
     if (type instanceof GraphQLList) {
