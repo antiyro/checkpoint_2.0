@@ -287,7 +287,10 @@ export default class Checkpoint {
             (sourceEvent.name == 'PairCreated' &&
               contract === validateAndParseAddress(event.from_address))
           ) {
-            if (sourceEvent.name == 'PairCreated') {
+            if (
+              sourceEvent.name == 'PairCreated' &&
+              contract === validateAndParseAddress(event.from_address)
+            ) {
               if (
                 !pairs.pairs.includes(event.data[0] as never) &&
                 (event.data[0] != null || event.data[0] !== '0x0')
