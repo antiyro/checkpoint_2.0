@@ -111,6 +111,11 @@ export default class Checkpoint {
    *
    */
   public async start() {
+    // CHECK IF ALL DB's exists :
+    this.mysql.queryAsync('CREATE DATABASE IF NOT EXISTS analytics_dev');
+    this.mysql.queryAsync('CREATE DATABASE IF NOT EXISTS analytics_staging');
+    this.mysql.queryAsync('CREATE DATABASE IF NOT EXISTS analytics_prod');
+
     this.log.debug('starting');
 
     const blockNum = await this.getStartBlockNum();
