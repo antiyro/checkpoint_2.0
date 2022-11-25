@@ -22,6 +22,8 @@ import {
 import { getContractsFromConfig } from './utils/checkpoint';
 import { CheckpointRecord, CheckpointsStore, MetadataId } from './stores/checkpoints';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
+import * as fs from 'fs';
+import pairs from './utils/pairs.json';
 
 export default class Checkpoint {
   public config: CheckpointConfig;
@@ -351,8 +353,30 @@ export default class Checkpoint {
       }
 
       for (const event of events) {
-        if (contract === validateAndParseAddress(event.from_address)) {
-          for (const sourceEvent of source.events) {
+        for (const sourceEvent of source.events) {
+          if (
+            pairs.pairs.includes(event.from_address as never) ||
+            (sourceEvent.name == 'PairCreated' &&
+              contract === validateAndParseAddress(event.from_address))
+          ) {
+            if (
+              sourceEvent.name == 'PairCreated' &&
+              contract === validateAndParseAddress(event.from_address)
+            ) {
+              if (
+                !pairs.pairs.includes(event.data[0] as never) &&
+                (event.data[0] != null || event.data[0] !== '0x0')
+              ) {
+                pairs.pairs.push(event.data[0] as never);
+                fs.writeFile(
+                  './node_modules/@antiyro/checkpoint_2.0/dist/src/utils/pairs.json',
+                  JSON.stringify(pairs, null, 2),
+                  function writeJSON(err) {
+                    if (err) return console.log(err);
+                  }
+                );
+              }
+            }
             if (`0x${hash.starknetKeccak(sourceEvent.name).toString('hex')}` === event.keys[0]) {
               foundContractData = true;
               this.log.info(

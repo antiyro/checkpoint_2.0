@@ -9,6 +9,7 @@ import {
 } from 'graphql';
 import DataLoader from 'dataloader';
 import { ResolverContextInput } from './resolvers';
+import { toPlural } from '../utils/graphql';
 
 /**
  * Creates getLoader function that will return existing, or create a new dataloader
@@ -22,7 +23,7 @@ export const createGetLoader = (context: ResolverContextInput) => {
   return (name: string) => {
     if (!loaders[name]) {
       loaders[name] = new DataLoader(async ids => {
-        const query = `SELECT * FROM ${name}s WHERE id in (?)`;
+        const query = `SELECT * FROM ${toPlural(name)} WHERE id in (?)`;
 
         context.log.debug({ sql: query, ids }, 'executing batched query');
 

@@ -1,6 +1,6 @@
 import { GraphQLField, GraphQLList, GraphQLObjectType } from 'graphql';
 import { AsyncMySqlPool } from '../mysql';
-import { getNonNullType } from '../utils/graphql';
+import { getNonNullType, toPlural } from '../utils/graphql';
 import { Logger } from '../utils/logger';
 import type DataLoader from 'dataloader';
 
@@ -62,7 +62,9 @@ export async function queryMulti(parent, args, context: ResolverContext, info) {
 
   params.push(skip, first);
 
-  const query = `SELECT * FROM ${returnType.name.toLowerCase()}s ${whereSql} ${orderBySql} LIMIT ?, ?`;
+  const query = `SELECT * FROM ${toPlural(
+    returnType.name.toLowerCase()
+  )} ${whereSql} ${orderBySql} LIMIT ?, ?`;
   log.debug({ sql: query, args }, 'executing multi query');
 
   const result = await mysql.queryAsync(query, params);

@@ -25,7 +25,8 @@ import {
   generateQueryForEntity,
   multiEntityQueryName,
   singleEntityQueryName,
-  getNonNullType
+  getNonNullType,
+  toPlural
 } from '../utils/graphql';
 import { CheckpointOptions } from '../types';
 import { querySingle, queryMulti, ResolverContext } from './resolvers';
@@ -192,8 +193,8 @@ export class GqlEntityController {
 
     let sql = '';
     this.schemaObjects.forEach(type => {
-      sql += `\n\nDROP TABLE IF EXISTS ${type.name.toLowerCase()}s;`;
-      sql += `\nCREATE TABLE ${type.name.toLowerCase()}s (`;
+      sql += `\n\nDROP TABLE IF EXISTS ${toPlural(type.name.toLowerCase())};`;
+      sql += `\nCREATE TABLE ${toPlural(type.name.toLowerCase())} (`;
       let sqlIndexes = ``;
 
       this.getTypeFields(type).forEach(field => {
@@ -447,6 +448,14 @@ export class GqlEntityController {
 
     if (type instanceof GraphQLList) {
       return 'JSON';
+    }
+
+    if (type instanceof GraphQLScalarType && type.name === 'Array') {
+      return 'VARCHAR(512)';
+    }
+
+    if (type instanceof GraphQLScalarType && type.name === 'Boolean') {
+      return 'BOOL';
     }
 
     throw new Error(`sql type for ${type} not support`);
